@@ -3,24 +3,14 @@ import './App.css';
 import SearchBar from './../SearchBar/SearchBar.js';
 import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
+import Spotify from '../../util/Spotify';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { searchResults: [
-      {
-        name: 'Tiny Dancer',
-        artist: 'Elton John',
-        album: 'Madman Across The Water',
-        id: 1
-      },
-      {
-        name: 'Tiny Dancer',
-        artist: 'Tim McGraw',
-        album: 'Love Story',
-        id: 2
-      }],
+    this.state = { 
+      searchResults: [],
       playlistName: 'Bass drops better than butter on toast',
       playlistTracks: [
         {
@@ -83,8 +73,9 @@ class App extends React.Component {
     
   }
 
-  search(searchTerm) {
-    console.log(searchTerm);
+  async search(searchTerm) {
+    const spotifyResults = await Spotify.search(searchTerm);
+    this.setState({ searchResults: spotifyResults});
   }
   
   render() {
