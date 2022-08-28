@@ -1,6 +1,7 @@
 let userAccessToken = '';
 const clientID = '294959fa3089485a9779510d956b0a88';
 const redirectURI = 'http://localhost:3000/';
+const baseURL = 'https://api.spotify.com/v1';
 
 function setTokenExpiration(token, expiration) {
     userAccessToken = token[1];
@@ -33,6 +34,37 @@ const Spotify = {
         url += '&redirect_uri=' + encodeURIComponent(redirectURI);
 
         window.location = url;
+    },
+
+    async search(searchTerm) {
+        let url = `${baseURL}/search?type=track&q=${searchTerm}`;
+        let accessToken = this.getAccessToken();
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+            cache: 'no-cache',
+        });
+        if(response.ok) {
+            const jsonResponse = await response.json();
+
+            let tracks = jsonResponse.tracks.items.map(track => {
+                const trackObj = {
+                    name: track.name,
+                    artist: track.artists[0].name,
+                    album: track.album.name,
+                    uri: track.uri,
+                    id: track.id
+                }
+                return trackObj;
+            })
+
+            return tracks;
+        }
+    },
+
     }
 }
 
