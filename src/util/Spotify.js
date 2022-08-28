@@ -65,6 +65,75 @@ const Spotify = {
         }
     },
 
+    async savePlaylist(playlistName, trackURIs) {
+        if (!(playlistName && trackURIs)) {
+            return;
+        }
+
+        const accessToken = userAccessToken;
+        const header = { 
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        };
+        let userID = '';
+        let playlistID = '';
+
+        const response = await fetch(`${baseURL}/me`, {
+            method: 'GET',
+            headers: header,
+        });
+
+        if(response.ok) {
+            const jsonResponse = await response.json();
+            console.log(jsonResponse);
+            userID = jsonResponse.id;
+        }
+
+        if(userID) {
+            let body = {
+                name: playlistName,
+                public: true
+            }
+            
+            try {
+                const response = await fetch(`${baseURL}/users/${userID}/playlists`, {
+                    method: 'POST',
+                    headers: header,
+                    body: JSON.stringify(body)
+                });
+
+                if(response.ok) {
+                    const jsonResponse = await response.json();
+                    console.log(jsonResponse);
+                    playlistID = jsonResponse.id;
+                }
+            } catch (error) {
+                console.log(error.message);
+            }  
+        }
+
+        if(playlistID) {
+            let body = {
+                uris: trackURIs
+            };
+
+            try {
+                const response = await fetch(`${baseURL}/playlists/${playlistID}/tracks`, {
+                    method: 'POST',
+                    headers: header,
+                    body: JSON.stringify(body)
+                });
+    
+                if(response.ok) {
+                    const jsonResponse = await response.json();
+                    console.log(jsonResponse)
+                    playlistID = jsonResponse.id;
+                }
+            } catch (error) {
+                console.log(error.message)
+            }
+            
+        }
     }
 }
 
