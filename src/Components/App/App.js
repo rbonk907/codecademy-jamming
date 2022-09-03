@@ -11,7 +11,7 @@ class App extends React.Component {
 
     this.state = { 
       searchResults: [],
-      playlistName: 'Bass drops better than butter on toast',
+      playlistName: 'New Playlist',
       playlistTracks: []
     };
 
@@ -29,10 +29,6 @@ class App extends React.Component {
     
     this.state.playlistTracks.push(track);
     this.setState({playlistTracks: this.state.playlistTracks});
-  }
-
-  componentDidUpdate() {
-   console.log(this.state);
   }
 
   removeTrack(track) {
@@ -58,6 +54,13 @@ class App extends React.Component {
 
   async search(searchTerm) {
     const spotifyResults = await Spotify.search(searchTerm);
+    
+    Spotify.getAlbumCover(spotifyResults)
+      .then(result => {
+        this.setState({ searchResults: result});
+      })
+      .catch(() => console.log('Oh no, something failed!'));
+
     this.setState({ searchResults: spotifyResults});
   }
   

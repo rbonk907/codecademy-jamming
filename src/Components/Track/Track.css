@@ -12,26 +12,46 @@
     border: 0px;
     background-color: rgba(0, 0, 0, 0);
     color: #fff;
+    justify-self: end;
 }
   
 .Track-action:hover {
     color: rgba(265, 265, 265, .5);
 }
-  
+
 .Track-information {
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+    align-items: flex-start;
+    justify-items: start;
+    padding-top: 5px;
+    width: 100%;
+}
+  
+.Track-text {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     height: 72px;
+    overflow: hidden;
 }
   
-.Track-information h3 {
+.Track-text h3 {
     margin-bottom: .22rem;
 }
   
-.Track-information p {
+.Track-text p {
     font-size: .83rem;
     font-weight: 300;
     color: rgba(256, 256, 256, 0.8);
+}
+
+.Track-album img {
+    width: 100%;
+    display: block;
+}
+
+.Track-album {
+    height: 64px;
 }
