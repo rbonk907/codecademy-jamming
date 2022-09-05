@@ -1,12 +1,14 @@
 let userAccessToken = '';
 let clientID = '';
 const redirectURI = 'https://grand-bombolone-467394.netlify.app/';
+// const redirectURI = 'http://localhost:8888/';
 const baseURL = 'https://api.spotify.com/v1';
 
 let savedSearchTerm = '';
 
 function setTokenExpiration(token, expiration) {
-    userAccessToken = token[1];
+    console.log(token[1]);
+    userAccessToken = decodeURIComponent(token[1]);
     const expirationTime = expiration[1];
     window.setTimeout(() => userAccessToken = '', expirationTime * 1000);
     window.history.pushState('Access Token', null, '/');   
@@ -41,7 +43,6 @@ const Spotify = {
         const envResponse = await fetch('./.netlify/functions/getClientID');
         if (envResponse.ok) {
             const jsonResponse = await envResponse.json();
-            console.log(jsonResponse.client_id);
             clientID = jsonResponse.client_id;
         }
 
@@ -97,29 +98,33 @@ const Spotify = {
         savedSearchTerm = searchTerm;
         let accessToken = await this.getAccessToken();
 
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
-            },
-            cache: 'no-cache',
-        });
+        console.log(`user Access Token acquired! ${accessToken}`);
 
-        if(response.ok) {
-            const jsonResponse = await response.json();
-
-            let tracks = jsonResponse.tracks.items.map(track => {
-                const trackObj = {
-                    name: track.name,
-                    artist: track.artists[0].name,
-                    album: track.album.name,
-                    uri: track.uri,
-                    id: track.id
-                }
-                return trackObj;
-            })
-
-            return tracks;
+        if(accessToken) {
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                cache: 'no-cache',
+            });
+    
+            if(response.ok) {
+                const jsonResponse = await response.json();
+    
+                let tracks = jsonResponse.tracks.items.map(track => {
+                    const trackObj = {
+                        name: track.name,
+                        artist: track.artists[0].name,
+                        album: track.album.name,
+                        uri: track.uri,
+                        id: track.id
+                    }
+                    return trackObj;
+                })
+    
+                return tracks;
+            }
         }
     },
 
