@@ -55,13 +55,16 @@ class App extends React.Component {
   async search(searchTerm) {
     const spotifyResults = await Spotify.search(searchTerm);
     
-    Spotify.getAlbumCover(spotifyResults)
+    if(spotifyResults) {
+      Spotify.getAlbumCover(spotifyResults)
       .then(result => {
         this.setState({ searchResults: result});
       })
       .catch(() => console.log('Oh no, something failed!'));
 
-    this.setState({ searchResults: spotifyResults});
+      this.setState({ searchResults: spotifyResults});
+    }
+    
   }
   
   render() {
