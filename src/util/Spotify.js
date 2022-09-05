@@ -1,6 +1,6 @@
 let userAccessToken = '';
-const clientID = process.env.SPOTIFY_CLIENT_ID;
-const redirectURI = 'http://localhost:3000/';
+let clientID = '';
+const redirectURI = 'https://grand-bombolone-467394.netlify.app/';
 const baseURL = 'https://api.spotify.com/v1';
 
 let savedSearchTerm = '';
@@ -13,7 +13,7 @@ function setTokenExpiration(token, expiration) {
 }
 
 const Spotify = {
-    getAccessToken() {
+    async getAccessToken() {
         if(userAccessToken) {
             console.log('User access token already acquired, returning...');
             return userAccessToken;
@@ -36,6 +36,13 @@ const Spotify = {
             sessionStorage.removeItem('savedSearchTerm');
 
             return userAccessToken;
+        }
+
+        const envResponse = await fetch('./.netlify/functions/getClientID');
+        if (envResponse.ok) {
+            const jsonResponse = await envResponse.json();
+            console.log(jsonResponse.client_id);
+            clientID = jsonResponse.client_id;
         }
 
         let url = 'https://accounts.spotify.com/authorize';
@@ -88,7 +95,7 @@ const Spotify = {
         let url = `${baseURL}/search?type=track&q=${searchTerm}`;
 
         savedSearchTerm = searchTerm;
-        let accessToken = this.getAccessToken();
+        let accessToken = await this.getAccessToken();
 
         const response = await fetch(url, {
             method: 'GET',
